@@ -1,6 +1,6 @@
 # Automation Exercise - Playwright E2E Tests
 
-An end-to-end test automation framework built with [Playwright](https://playwright.dev/) for [Automation Exercise](https://automationexercise.com/). This project showcases best practices in test automation including Page Object Model (POM) design pattern.
+An end-to-end test automation framework built with [Playwright](https://playwright.dev/) for [Automation Exercise](https://automationexercise.com/). This project is for practice of test automation including Page Object Model (POM) design pattern. Any one can practise adding more tests and requesting PR.
 
 ## Features
 
@@ -99,14 +99,9 @@ npx playwright show-report
 - TypeScript for better code quality
 - Cross-browser testing configuration
 
-## Future Enhancements
+## How to Contribute
 
-- User registration flow
-- Add to cart functionality
-- Checkout process
-- API testing integration
-- Custom fixtures and test data management
-- Allure/HTML reporting customization
+Feel free to add more test cases, improve page objects, or enhance the framework. Any one can practise adding more tests and requesting PR. Please follow the existing Page Object Model structure when adding new tests.
 
 ## License
 
