@@ -12,7 +12,8 @@ export class BrandPage extends BasePage {
   }
 
   async clickBrand(brandName: string) {
-    await this.page.getByRole('link', { name: brandName }).click();
+    await this.page.waitForLoadState('domcontentloaded');
+    await this.page.locator('.brands-name a').filter({ hasText: brandName }).click();
   }
 
   async getBrandCount() {

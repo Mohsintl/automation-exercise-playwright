@@ -16,11 +16,14 @@ export class ProductsPage extends BasePage {
   }
 
   async searchProduct(productName: string) {
+    await this.page.waitForLoadState('domcontentloaded');
     await this.searchInput.fill(productName);
     await this.searchButton.click();
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async addProductToCart(index: number = 0) {
+    await this.page.waitForLoadState('domcontentloaded');
     await this.productCards.nth(index).hover();
     await this.page.locator('.overlay-content .btn').nth(index).click();
   }

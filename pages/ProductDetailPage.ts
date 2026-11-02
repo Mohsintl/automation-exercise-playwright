@@ -20,10 +20,12 @@ export class ProductDetailPage extends BasePage {
   }
 
   async setQuantity(quantity: string) {
+    await this.page.waitForLoadState('domcontentloaded');
     await this.quantityInput.fill(quantity);
   }
 
   async addToCart() {
+    await this.page.waitForLoadState('domcontentloaded');
     await this.addToCartButton.click();
   }
 }

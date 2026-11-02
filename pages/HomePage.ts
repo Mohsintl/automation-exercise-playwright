@@ -9,10 +9,10 @@ export class HomePage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.signupLoginLink = page.getByRole('link', { name: 'Signup / Login' });
-    this.homeNavLink = page.getByRole('link', { name: ' Home' });
-    this.productsNavLink = page.getByRole('link', { name: ' Products' });
-    this.cartNavLink = page.getByRole('link', { name: ' Cart' });
+    this.signupLoginLink = page.locator('a[href="/login"]');
+    this.homeNavLink = page.locator('a[href="/"]').first();
+    this.productsNavLink = page.locator('a[href="/products"]');
+    this.cartNavLink = page.locator('a[href="/view_cart"]').first();
   }
 
   async goto() {
@@ -21,13 +21,16 @@ export class HomePage extends BasePage {
 
   async clickSignupLogin() {
     await this.signupLoginLink.click();
+    await this.handleHeavyLoad();
   }
 
   async clickProducts() {
     await this.productsNavLink.click();
+    await this.handleHeavyLoad();
   }
 
   async clickCart() {
     await this.cartNavLink.click();
+    await this.handleHeavyLoad();
   }
 }

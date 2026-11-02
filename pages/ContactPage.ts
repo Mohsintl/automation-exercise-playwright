@@ -33,7 +33,10 @@ export class ContactPage extends BasePage {
   }
 
   async submitForm() {
-    this.page.on('dialog', dialog => dialog.accept());
+    await this.page.waitForLoadState('domcontentloaded');
+    this.page.once('dialog', async dialog => {
+      await dialog.accept();
+    });
     await this.submitButton.click();
   }
 }

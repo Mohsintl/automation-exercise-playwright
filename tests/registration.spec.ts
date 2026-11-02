@@ -36,7 +36,7 @@ test.describe('User Registration', () => {
     
     await loginPage.signup(userData.name, userData.email);
     
-    await expect(page.locator('.login-form h2')).toContainText('Enter Account Information');
+    await expect(page.locator('.login-form h2').first()).toContainText('Enter Account Information');
     
     await signupPage.fillAccountDetails(userData);
     await signupPage.fillAddressDetails(userData);

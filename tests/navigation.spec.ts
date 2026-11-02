@@ -24,7 +24,7 @@ test.describe('Site Navigation', () => {
     const homePage = new HomePage(page);
     
     await homePage.goto();
-    await page.getByRole('link', { name: ' Test Cases' }).click();
+    await page.locator('.navbar-nav a[href="/test_cases"]').click();
     
     await expect(page).toHaveURL(/.*test_cases/);
     await expect(page.locator('.title.text-center')).toContainText('Test Cases');
@@ -34,7 +34,7 @@ test.describe('Site Navigation', () => {
     const homePage = new HomePage(page);
     
     await homePage.goto();
-    await page.getByRole('link', { name: ' API Testing' }).click();
+    await page.locator('.navbar-nav a[href="/api_list"]').click();
     
     await expect(page).toHaveURL(/.*api_list/);
     await expect(page.locator('.title.text-center')).toBeVisible();
@@ -46,7 +46,7 @@ test.describe('Site Navigation', () => {
     await homePage.goto();
     await page.locator('#footer').scrollIntoViewIfNeeded();
     
-    await expect(page.locator('.single-widget h2')).toContainText('Subscription');
+    await expect(page.locator('.single-widget h2').first()).toContainText('Subscription');
     await expect(page.locator('#susbscribe_email')).toBeVisible();
     
     await page.locator('#susbscribe_email').fill('test@example.com');

@@ -7,7 +7,7 @@ test.describe('Category Navigation', () => {
     
     await homePage.goto();
     
-    await expect(page.locator('.left-sidebar h2')).toContainText('Category');
+    await expect(page.locator('.left-sidebar h2').first()).toContainText('Category');
     await expect(page.locator('.panel-group.category-products')).toBeVisible();
   });
 
@@ -16,7 +16,7 @@ test.describe('Category Navigation', () => {
     
     await homePage.goto();
     
-    await page.getByRole('link', { name: ' Women' }).click();
+    await page.locator('a[href="#Women"]').click();
     await page.locator('a[href="/category_products/1"]').click();
     
     await expect(page.locator('.title.text-center')).toContainText('Women - Dress Products');
@@ -28,7 +28,7 @@ test.describe('Category Navigation', () => {
     
     await homePage.goto();
     
-    await page.getByRole('link', { name: ' Men' }).click();
+    await page.locator('a[href="#Men"]').click();
     await page.locator('a[href="/category_products/3"]').click();
     
     await expect(page.locator('.title.text-center')).toContainText('Men - Tshirts Products');
@@ -39,7 +39,7 @@ test.describe('Category Navigation', () => {
     
     await homePage.goto();
     
-    await page.getByRole('link', { name: ' Kids' }).click();
+    await page.locator('a[href="#Kids"]').click();
     await page.locator('a[href="/category_products/4"]').click();
     
     await expect(page.locator('.title.text-center')).toContainText('Kids - Dress Products');

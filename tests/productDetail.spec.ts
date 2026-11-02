@@ -25,6 +25,7 @@ test.describe('Product Details', () => {
     
     await homePage.goto();
     await page.locator('.product-image-wrapper .choose a').first().click();
+    await page.waitForLoadState('domcontentloaded');
     
     await productDetailPage.setQuantity('3');
     await productDetailPage.addToCart();
@@ -41,6 +42,7 @@ test.describe('Product Details', () => {
     
     await homePage.goto();
     await page.locator('.product-image-wrapper .choose a').nth(1).click();
+    await page.waitForLoadState('domcontentloaded');
     
     const productName = page.locator('.product-information h2');
     const availability = page.locator('.product-information p').filter({ hasText: 'Availability' });

@@ -8,7 +8,8 @@ test.describe('Contact Us Form', () => {
     const contactPage = new ContactPage(page);
     
     await homePage.goto();
-    await page.getByRole('link', { name: ' Contact us' }).click();
+    await page.locator('a[href="/contact_us"]').click();
+    await page.waitForLoadState('domcontentloaded');
     
     await expect(contactPage.getInTouchTitle).toBeVisible();
     await expect(contactPage.getInTouchTitle).toContainText('Get In Touch');
@@ -31,7 +32,8 @@ test.describe('Contact Us Form', () => {
     const contactPage = new ContactPage(page);
     
     await homePage.goto();
-    await page.getByRole('link', { name: ' Contact us' }).click();
+    await page.locator('a[href="/contact_us"]').click();
+    await page.waitForLoadState('domcontentloaded');
     
     await contactPage.fillContactForm(
       'Test User',
