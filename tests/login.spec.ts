@@ -3,7 +3,7 @@ import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
 
 test.describe('Login functionality', () => {
-  test('should navigate to login page', async ({ page }) => {
+  test('should navigate to login page', { tag: '@smoke' }, async ({ page }) => {
     const homePage = new HomePage(page);
     await homePage.goto();
     await homePage.clickSignupLogin();
@@ -13,7 +13,7 @@ test.describe('Login functionality', () => {
     await expect(page.locator('.signup-form')).toBeVisible();
   });
 
-  test('login with invalid credentials should show error', async ({ page }) => {
+  test('login with invalid credentials should show error', { tag: '@smoke' }, async ({ page }) => {
     const homePage = new HomePage(page);
     const loginPage = new LoginPage(page);
     

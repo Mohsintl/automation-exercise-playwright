@@ -1,9 +1,15 @@
 {
   "name": "automation-exercise-playwright",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright + TypeScript E2E suite for Automation Exercise using the Page Object Model",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:chromium": "playwright test --project=chromium",
+    "test:headed": "playwright test --headed --project=chromium",
+    "report": "playwright show-report"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

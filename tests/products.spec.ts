@@ -3,7 +3,7 @@ import { HomePage } from '../pages/HomePage';
 import { ProductsPage } from '../pages/ProductsPage';
 
 test.describe('Products functionality', () => {
-  test('should display all products', async ({ page }) => {
+  test('should display all products', { tag: '@smoke' }, async ({ page }) => {
     const homePage = new HomePage(page);
     const productsPage = new ProductsPage(page);
     
@@ -14,7 +14,7 @@ test.describe('Products functionality', () => {
     await expect(productsPage.productCards.first()).toBeVisible();
   });
 
-  test('should search for a product', async ({ page }) => {
+  test('should search for a product', { tag: '@smoke' }, async ({ page }) => {
     const homePage = new HomePage(page);
     const productsPage = new ProductsPage(page);
     
