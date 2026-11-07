@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 
 test.describe('Site Navigation', () => {
-  test('should navigate to all main sections', async ({ page }) => {
+  test('should navigate to all main sections', { tag: '@smoke' }, async ({ page }) => {
     const homePage = new HomePage(page);
     
     await homePage.goto();

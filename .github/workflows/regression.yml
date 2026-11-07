@@ -1,0 +1,60 @@
+name: Regression
+
+# The full suite on Chromium, Firefox and WebKit, one browser at a time.
+# The target is a public demo site, so the browsers do not run in parallel.
+on:
+  push:
+    branches: [master]
+  # The site changes without any commit here, so run nightly too.
+  schedule:
+    - cron: '17 2 * * *'
+  # A pull request that changes this workflow runs it before merging.
+  pull_request:
+    branches: [master]
+    paths:
+      - .github/workflows/regression.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    name: Regression (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install ${{ matrix.browser }}
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run regression suite
+        run: npx playwright test --project=${{ matrix.browser }}
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-report-${{ matrix.browser }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

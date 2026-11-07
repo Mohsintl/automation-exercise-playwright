@@ -1,107 +1,115 @@
 # Automation Exercise - Playwright E2E Tests
 
-An end-to-end test automation framework built with [Playwright](https://playwright.dev/) for [Automation Exercise](https://automationexercise.com/). This project is for practice of test automation including Page Object Model (POM) design pattern. Any one can practise adding more tests and requesting PR.
+[![Smoke](https://github.com/Mohsintl/automation-exercise-playwright/actions/workflows/smoke.yml/badge.svg)](https://github.com/Mohsintl/automation-exercise-playwright/actions/workflows/smoke.yml)
+[![Regression](https://github.com/Mohsintl/automation-exercise-playwright/actions/workflows/regression.yml/badge.svg)](https://github.com/Mohsintl/automation-exercise-playwright/actions/workflows/regression.yml)
 
-## Features
+An end-to-end test suite for [Automation Exercise](https://automationexercise.com/), a public e-commerce demo site, built with [Playwright](https://playwright.dev/) and TypeScript using the Page Object Model. Contributions of new tests are welcome.
 
-- **Page Object Model** - Clean separation of page elements and actions
-- **Cross-browser testing** - Supports Chromium, Firefox, and WebKit
-- **Modular structure** - Reusable page classes and organized test suites
-- **GitHub Actions CI** - Ready to run in CI/CD pipeline
-- **TypeScript support** - Type-safe test development
+## Stack
 
-## Project Structure
+- Playwright Test, TypeScript, Node.js
+- GitHub Actions: smoke tests on pull requests, a three-browser regression run on `master` and nightly
+
+## Project structure
 
 ```
 automation-exercise-playwright/
-├── pages/              # Page Object classes
-│   ├── BasePage.ts
+├── .github/workflows/
+│   ├── smoke.yml          # @smoke tests on Chromium, every pull request
+│   └── regression.yml     # full suite on Chromium, Firefox, WebKit
+├── pages/                 # Page Objects
+│   ├── BasePage.ts        # navigation, ad blocking, heavy-load retry
 │   ├── HomePage.ts
 │   ├── LoginPage.ts
-│   └── ProductsPage.ts
-├── tests/              # Test specifications
-│   ├── home.spec.ts
-│   ├── login.spec.ts
-│   └── products.spec.ts
-├── fixtures/           # Custom fixtures (to be added)
-├── utils/              # Helper utilities (to be added)
-└── test-data/          # Test data files (to be added)
+│   ├── SignupPage.ts
+│   ├── ProductsPage.ts
+│   ├── ProductDetailPage.ts
+│   ├── CartPage.ts
+│   ├── BrandPage.ts
+│   └── ContactPage.ts
+├── tests/                 # 24 tests in 10 spec files
+└── playwright.config.ts
 ```
 
-## Prerequisites
+## Page Object Model
 
-- Node.js (v16 or higher)
-- npm
+Each page of the site has a class in `pages/` that owns its locators and actions; tests only call those methods and assert. `BasePage` holds what every page needs:
 
-## Installation
+- **Ad blocking**: requests to ad networks are aborted, since ads cover elements and make clicks flaky.
+- **Heavy-load handling**: the site sometimes answers "This website is under heavy load". `BasePage.goto` waits and reloads, up to three times.
 
-1. Clone the repository
-```bash
-git clone https://github.com/yourusername/automation-exercise-playwright.git
-cd automation-exercise-playwright
-```
+## Test coverage
 
-2. Install dependencies
+| Spec | Covers |
+| :--- | :--- |
+| `home.spec.ts` | Home page loads with its main navigation |
+| `login.spec.ts` | Login page navigation, error on invalid credentials |
+| `registration.spec.ts` | New user signup with a unique generated email |
+| `products.spec.ts` | Product listing and search |
+| `productDetail.spec.ts` | Product details, quantity, add to cart |
+| `cart.spec.ts` | Add to cart, view cart |
+| `brand.spec.ts` | Brand listing and filtering |
+| `category.spec.ts` | Women, Men, and Kids category filters |
+| `contact.spec.ts` | Contact form submission and return home |
+| `navigation.spec.ts` | Main sections, Test Cases and API pages, footer subscription |
+
+### Smoke and regression
+
+- **Smoke**: 7 tests tagged `@smoke` covering the critical paths (home, login, product listing and search, add to cart, main navigation). They run on every pull request.
+- **Regression**: the whole suite, smoke tests included. Every test is regression, so nothing else is tagged.
+
+## Running locally
+
+Requires Node.js 20 or later.
+
 ```bash
 npm ci
+npx playwright install --with-deps
 ```
 
-3. Install Playwright browsers
-```bash
-npx playwright install
+| Command | Runs |
+| :--- | :--- |
+| `npm test` | Full suite on Chromium, Firefox, and WebKit |
+| `npm run test:smoke` | `@smoke` tests on all three browsers |
+| `npm run test:chromium` | Full suite on Chromium only |
+| `npm run test:headed` | Full suite on Chromium in a visible browser |
+| `npm run report` | Opens the last HTML report |
+
+To run one file: `npx playwright test tests/login.spec.ts`.
+
+## CI
+
+```mermaid
+flowchart LR
+  PR[Pull request to master] --> S[Smoke: @smoke on Chromium]
+  M[Push to master] --> R
+  N[Nightly 02:17 UTC] --> R
+  R[Regression: full suite] --> C[Chromium] --> F[Firefox] --> W[WebKit]
 ```
 
-## Running Tests
+- **Smoke** (`smoke.yml`): every pull request to `master`. Installs only Chromium and runs the `@smoke` tests.
+- **Regression** (`regression.yml`): every push to `master`, nightly, by hand, and on a pull request that changes the workflow itself. It is a matrix of one job per browser.
+  - `max-parallel: 1` runs the browsers one after another, so the public site gets one browser's traffic at a time.
+  - `fail-fast: false` lets every browser finish, so one browser failing does not hide the others' results. Any failed browser fails the workflow.
+  - The nightly run matters because the site changes without any commit here.
+- Both workflows have read-only permissions and cancel a superseded run on the same branch. No secrets are needed: the signup test generates a unique email each run.
 
-Run all tests:
-```bash
-npx playwright test
-```
+### Reliability and evidence
 
-Run tests in headed mode:
-```bash
-npx playwright test --headed
-```
+Set in `playwright.config.ts`:
 
-Run specific test file:
-```bash
-npx playwright test tests/login.spec.ts
-```
+- One worker, no parallel tests, to stay under the demo site's load limits.
+- Retries: 2 on CI, 1 locally. `test.only` fails the run on CI.
+- On failure: a screenshot and a video. On the first retry: a Playwright trace.
+- Reporters: HTML and list, plus GitHub annotations on CI.
 
-Run tests in a specific browser:
-```bash
-npx playwright test --project=chromium
-```
+### Reading a CI failure
 
-Run tests with UI mode:
-```bash
-npx playwright test --ui
-```
+Open the run in the **Actions** tab and download the `smoke-report` or `regression-report-<browser>` artifact. It holds `playwright-report/` (open `index.html`) and `test-results/` with the screenshots, videos, and traces. Open a trace with `npx playwright show-trace <trace.zip>`.
 
-## Viewing Reports
+## Contributing
 
-After test execution, view the HTML report:
-```bash
-npx playwright show-report
-```
-
-## Test Scenarios Covered
-
-- **Home Page** - Page load and navigation visibility
-- **Login** - Navigation to login/signup page, invalid login validation
-- **Products** - Product listing, product search functionality
-
-## Best Practices Implemented
-
-- Page Object Model for maintainability
-- Descriptive test names and proper test organization with `describe` blocks
-- Reusable base page class
-- TypeScript for better code quality
-- Cross-browser testing configuration
-
-## How to Contribute
-
-Feel free to add more test cases, improve page objects, or enhance the framework. Any one can practise adding more tests and requesting PR. Please follow the existing Page Object Model structure when adding new tests.
+Add tests through the existing Page Objects, and add a Page Object for a new page. Tag a test `@smoke` only if it covers a critical path and runs fast.
 
 ## License
 
